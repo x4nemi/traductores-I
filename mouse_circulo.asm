@@ -1,31 +1,34 @@
-    org 100h   
-    jmp config    
+    .model small
+    .data
+    
+    x db 20,19,18,15,13,10,6,4,1,0,0,0,1,4,6,10,13,15,18,19,20,19,18,15,13,10,6,4,1,0,0
+    y db 10,13,15,18,19,20,19,18,15,13,10,6,4,1,0,0,0,1,4,6,10,13,15,18,19,20,19,18,15,13,10
 
-    x dw 20,19,18,15,13,10,6,4,1,0,0,0,1,4,6,10,13,15,18,19,20,19,18,15,13,10,6,4,1,0,0
-    y dw 10,13,15,18,19,20,19,18,15,13,10,6,4,1,0,0,0,1,4,6,10,13,15,18,19,20,19,18,15,13,10
-            
-    circx dw 0
-    circy dw 0   
-
-    cenx dw 0
-    ceny dw 0
+    
+    cenx db 0
+    ceny db 0
 
     color equ 1010b  
 
-    i dw 0
-                
-    pixel macro r,c             ;macro para mostrar pixel
-        mov cx,r
-        mov dx,c
-        mov al,color
-        mov ah,0Ch
+    i dw 0 
 
-        int 10h
-    endm            
-            
-config:
+.code
+                
+pixel macro r,c             ;macro para mostrar pixel
+    mov cl,r
+    mov dl,c
+    mov al,color
+    mov ah,0Ch
+
+    int 10h
+endm 
+         
+config:   
+    lea ax,data
+    mov ds,ax
+
     mov ah,00
-    mov al,12h
+    mov al,13h
     int 10h
 
 inicio:
@@ -53,24 +56,40 @@ inicio:
     
 
 grafico:   
-    shr cx,1
-    pixel cx, dx
+    shr cl,1            ;cx = cx / 2
+    ;pixel cl, dl        ;se dibuja el pixel seleccionado
     
+    mov al,1010b
+    mov ah,0ch
+    int 10h
+     
+    mov cenx,cl         ;centro constante
+    mov ceny,dl
+     
+    mov i,0
     ciclo:     
-        mov si, i        
-        mov circx, cx
-        mov circy, dx 
+        mov si, i       ;le pasamos el valor de i 
+        ;mov circx, cx   ;constante = x
+        ;mov circy, dx   ;constante = y
         
-        mov ax,x[si]
+        mov al,x[si]    ;al = una parte del arreglo
+        mov bl,y[si]    ;bl = una parte del arreglo
         
-        mov bx,y[si]
+        sub al,cenx     ;al = al - cl 
+        sub bl,ceny     ;bl = bl - cl 
         
-        sub circx,ax
-        sub circy,bx
-        pixel circx,circy
-        inc i   
-        cmp i,20
-        jnz ciclo
+        mov cl,al       ;cl = al (x)
+        mov dl,bl       ;dl = bl (y) 
+        
+        
+        mov al,1010b    ;color
+        mov ah,0ch      
+        int 10h         ;se dibuja cx y dx
+        
+        inc i           ;se incrementa i
+        cmp i,20        ;compara si i == 20
+        jnz ciclo       ;si no es, se repite ciclo
+        
         
     
 
