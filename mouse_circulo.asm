@@ -1,10 +1,8 @@
     .model small
     .data
     
-    x db 20,19,18,15,13,10,6,4,1,0,0,0,1,4,6,10,13,15,18,19,20,19,18,15,13,10,6,4,1,0,0
-    y db 10,13,15,18,19,20,19,18,15,13,10,6,4,1,0,0,0,1,4,6,10,13,15,18,19,20,19,18,15,13,10
-
-    
+    x db 80,78,72,63,52,40,27,16,7,1,0,1,7,16,27,40,52,63,72,78,80,78,72,63,52,40,27,16,7,1,0
+    y db 40,52,63,72,78,80,78,72,63,52,40,27,16,7,1,0,1,7,16,27,40,52,63,72,78,80,78,72,63,52,40
     cenx db 0
     ceny db 0
 
@@ -31,7 +29,6 @@ config:
     mov al,13h
     int 10h
 
-inicio:
     mov ax, 0000h ; Restaura driver y lee estado
     INT 33h ; X = Estado
     ; 0000h hardware/driver no instalado
@@ -41,7 +38,8 @@ inicio:
     ; = 0002h Dos botones (muchos drivers)
     ; = 0003h Tres botones Sistemas/Logitech
     ; = FFFFh Dos botones
-    repite: mov ax, 0003h ; Obtiene la posicion y el estado del puntero
+repite: 
+    mov ax, 0003h ; Obtiene la posicion y el estado del puntero
     INT 33h ; BX = Estado del ratón
     ; Bit Descripcion
     ; 0 Boton izquierdo pulsado si 1
@@ -75,14 +73,17 @@ grafico:
         mov al,x[si]    ;al = una parte del arreglo
         mov bl,y[si]    ;bl = una parte del arreglo
         
-        sub al,cenx     ;al = al - cl 
-        sub bl,ceny     ;bl = bl - cl 
+        add al,cenx     ;al = al - centrox 
+        sub bl,ceny     ;bl = bl - centroy
+        
+        
+        
         
         mov cl,al       ;cl = al (x)
         mov dl,bl       ;dl = bl (y) 
         
         
-        mov al,1010b    ;color
+        mov al,color    ;color
         mov ah,0ch      
         int 10h         ;se dibuja cx y dx
         
