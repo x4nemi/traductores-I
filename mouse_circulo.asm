@@ -1,8 +1,9 @@
     .model small
     .data
     
-    x db 80,78,72,63,52,40,27,16,7,1,0,1,7,16,27,40,52,63,72,78,80,78,72,63,52,40,27,16,7,1,0
-    y db 40,52,63,72,78,80,78,72,63,52,40,27,16,7,1,0,1,7,16,27,40,52,63,72,78,80,78,72,63,52,40
+    x db 40,38,32,23,12,0,-13,-24,-33,-39,-40,-39,-33,-24,-13,-1,12,23,32,38,40,38,32,23,12,0,-13,-24,-33,-39,-40
+    y db 0,12,23,32,38,40,38,32,23,12,0,-13,-24,-33,-39,-40,-39,-33,-24,-13,-1,12,23,32,38,40,38,32,23,12,0
+    
     cenx db 0
     ceny db 0
 
@@ -12,9 +13,9 @@
 
 .code
                 
-pixel macro r,c             ;macro para mostrar pixel
-    mov cl,r
-    mov dl,c
+pixel macro r,c    ;macro para mostrar pixel
+    mov cl,r       ;x
+    mov dl,c       ;y
     mov al,color
     mov ah,0Ch
 
@@ -55,37 +56,22 @@ repite:
 
 grafico:   
     shr cl,1            ;cx = cx / 2
-    ;pixel cl, dl        ;se dibuja el pixel seleccionado
-    
-    mov al,1010b
-    mov ah,0ch
-    int 10h
+    pixel cl, dl        ;se dibuja el pixel seleccionado
      
     mov cenx,cl         ;centro constante
     mov ceny,dl
      
-    mov i,0
+    mov i,0             ;inicializamos i = 0
     ciclo:     
         mov si, i       ;le pasamos el valor de i 
-        ;mov circx, cx   ;constante = x
-        ;mov circy, dx   ;constante = y
         
         mov al,x[si]    ;al = una parte del arreglo
         mov bl,y[si]    ;bl = una parte del arreglo
         
-        add al,cenx     ;al = al - centrox 
-        sub bl,ceny     ;bl = bl - centroy
-        
-        
-        
-        
-        mov cl,al       ;cl = al (x)
-        mov dl,bl       ;dl = bl (y) 
-        
-        
-        mov al,color    ;color
-        mov ah,0ch      
-        int 10h         ;se dibuja cx y dx
+        add al,cenx     ;al = al + centrox 
+        add bl,ceny     ;bl = bl + centroy
+                
+        pixel al,bl
         
         inc i           ;se incrementa i
         cmp i,20        ;compara si i == 20
