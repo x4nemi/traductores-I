@@ -70,7 +70,7 @@ start:
     printMSG salto
     printMSG salto
     
-    cmp opcion, 48
+    cmp opcion, 52
     je salir
     
     cmp opcion,49
@@ -131,11 +131,12 @@ opcion3:
     
     mov al, var
     sub al,30h
-    mul al
+    mov bl, al
+    mul bl
     mov var, al 
     
     printMSG resultado
-    printNUM al
+    printNUM var
     jmp start  
 
 salir:
