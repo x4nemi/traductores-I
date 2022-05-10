@@ -1,13 +1,13 @@
-;Programa que tiene menú, doble, mitad y el cuadrado de un número
+;Menú con tres cifras
 
     org 100h
     jmp start
     
     opc db "Dame un numero: ", "$$"
     
-    opc1 db "1. Calcular el doble de un número entero.", "$$$"    
-    opc2 db "2. Calcular la mitad de un número entero.", "$$$"
-    opc3 db "3. Calcular el cuadrado de un número entero.", "$$$"
+    opc1 db "1. Calcular el doble de un numero entero.", "$$$"    
+    opc2 db "2. Calcular la mitad de un numero entero.", "$$$"
+    opc3 db "3. Calcular el cuadrado de un numero entero.", "$$$"
     opc4 db "4. Salir.", "$$$"
     
     otra db "Opcion incorrecta", "$$"
@@ -17,8 +17,13 @@
     salto db 13, 10, "", "$$$$$"  
     resultado db "Resultado: ", "$$"
     
-    ;Opcion 1
-    var db 0  
+    var db 0    
+    
+    u db 0
+    d db 0
+    c db 0
+    vardec db 0
+    varuni db 0
     
     opcion db 0
 
@@ -29,27 +34,49 @@ printMSG MACRO msg
 endm
 
 printNUM MACRO num 
-    mov al,num
-    AAM
-    mov bx,ax
-    mov ah,02h
-    mov dl,bh
-    add dl,30h
-    int 21h ; imprime decena
+    mov al,num                                         
+    aam                                                 
+    mov u,al                                            
+    mov al,ah                                           
+    aam                                             
+    mov c,ah                                       
+    mov d,al                                          
 
-    mov ah,02h
-    mov dl,bl
-    add dl,30h
-    int 21h ; imprime unidad  
+
+    mov ah,02h                                         
+    mov dl,c                                            
+    add dl,30h                                       
+    int 21h  
+                                            
+    mov dl,d                                          
+    add dl,30h                                          
+    int 21h                                             
+    mov dl,u                                          
+    add dl,30h                              
+    int 21h                                         
 endm   
 
 pedirNUM MACRO num
     mov ah, 01h
-    int 21h
+    int 21h    
+    sub al, 30h
+    mov d, al
+    
+     
+    mov ah, 01h
+    int 21h 
+    sub al, 30h  
+    mov u, al
+    
+    mov al,d
+    mov bl,10
+    mul bl
+    add al,u
     mov num, al
+    
 endm
 
-menu MACRO
+menu MACRO 
     printMSG opc1 
     printMSG salto
     printMSG opc2 
@@ -66,7 +93,9 @@ start:
     printMSG salto  
     printMSG salto
     menu
-    pedirNUM opcion 
+    mov ah, 01h
+    int 21h  
+    mov opcion, al 
     printMSG salto
     printMSG salto
     
@@ -93,11 +122,8 @@ opcion1:
     
     printMSG salto
     
-    mov al, var 
-    sub al, 30h 
-    mov cl, 2
-    
-    mul cl
+    mov al, var
+    add al, al
     
     mov var, al 
                
@@ -113,7 +139,6 @@ opcion2:
     printMSG salto
     
     mov al, var
-    sub al,30h
     
     shr al,1
         
@@ -130,7 +155,6 @@ opcion3:
     printMSG salto
     
     mov al, var
-    sub al,30h
     mov bl, al
     mul bl
     mov var, al 
